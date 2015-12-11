@@ -34,9 +34,9 @@ void LinkState::LinkHasBeenUpdated(Link* l) {
 
 void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m) {
     cerr << *this << " got a routing message: " << *m << " (ignored)" << endl;
-    if(myTable -> topo[m -> source][m -> destination].age < (int) m->age) {
-        myTable -> topo[m -> source][m -> destination].cost = m -> latency;
-        myTable -> topo[m -> source][m -> destination].cost = m -> age;
+    if(myTable -> topo[m -> source][m -> destination].age < (int) m -> age) {
+        myTable -> topo[m -> source][m -> destination].cost = m -> latency;                                                                                                                                         
+        myTable -> topo[m -> source][m -> destination].age = m -> age;
         SendToNeighbors(m);
     }
     
@@ -75,7 +75,7 @@ Node* LinkState::GetNextHop(Node *destination) {
 
     cout << "nodes in topology: " << nodesInTopology <<"     " << d.size() << "\n";
     // for each node in topology
-    for(int i = 0; i < nodesInTopology; i++) {
+    for(int i = 0; i < nodesInTopology - 1; i++) {
         int closest;
         int closestDistance = 1000000;
 
