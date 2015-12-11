@@ -32,7 +32,6 @@ ostream & Table::Print(ostream &os) const
 
 int Table::update(const Link *l) {
   topo[l -> GetSrc()][l -> GetDest()].cost = l -> GetLatency();
-  // distance
   return topo[l -> GetSrc()][l -> GetDest()].age++;
 }
 
