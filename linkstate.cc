@@ -39,14 +39,14 @@ void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m) {
         myTable -> topo[m -> source][m -> destination].age = m -> age;
         deque<Node*> *neighbors = GetNeighbors();
         while(!neighbors->empty())		
--				{		
--					Node * n = neighbors->front();		
--					if (n->GetNumber() != m->source)		
--					{		
--						SendToNeighbor(n, m);		
--					}		
--					neighbors->pop_front();		
--				}
+				{		
+					Node * n = neighbors->front();		
+				    if (n->GetNumber() != m->source)		
+				    {		
+						SendToNeighbor(n, m);		
+					}		
+					neighbors->pop_front();		
+				}
     }
     
 }
