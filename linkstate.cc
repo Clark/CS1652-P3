@@ -37,7 +37,16 @@ void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m) {
     if(myTable -> topo[m -> source][m -> destination].age < (int) m -> age) {
         myTable -> topo[m -> source][m -> destination].cost = m -> latency;                                                                                                                                         
         myTable -> topo[m -> source][m -> destination].age = m -> age;
-        SendToNeighbors(m);
+				deque<Node*> * neighbors = GetNeighbors();
+				while(!neighbors->empty())
+				{
+					Node * n = neighbors->front();
+					if (n->GetNumber() != m->source)
+					{
+						SendToNeighbor(n, m);
+					}
+					neighbors->pop_front();
+				}
     }
     
 }
