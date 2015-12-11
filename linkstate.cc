@@ -37,16 +37,7 @@ void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m) {
     if(myTable -> topo[m -> source][m -> destination].age < (int) m -> age) {
         myTable -> topo[m -> source][m -> destination].cost = m -> latency;                                                                                                                                         
         myTable -> topo[m -> source][m -> destination].age = m -> age;
-				deque<Node*> * neighbors = GetNeighbors();
-				while(!neighbors->empty())
-				{
-					Node * n = neighbors->front();
-					if (n->GetNumber() != m->source)
-					{
-						SendToNeighbor(n, m);
-					}
-					neighbors->pop_front();
-				}
+        SendToNeighbors(m);
     }
     
 }
@@ -63,6 +54,7 @@ Node* LinkState::GetNextHop(Node *destination) {
 
     unsigned nodesInTopology = (myTable->topo).size();
     //cout << nodesInTopology << " NODES " << number << "\n";
+
     // STL structures for Dijkstra()
     // using just a large number to represent infinity distance
     // using just a large number to represent undefined parent
@@ -75,15 +67,15 @@ Node* LinkState::GetNextHop(Node *destination) {
     d[number] = 0;      // distance to self is zero
     p[number] = NULL;   // first has no parent
     
-    // INITIAL NODE:
+    // INITIAL NODE TO SEARCH FOR PATHS FROM
     map<int, TopoLink> :: iterator topoIte;
     for(topoIte = myTable->topo[number].begin(); topoIte != myTable -> topo[number].end(); topoIte++) {
         d[topoIte -> first] = topoIte -> second.cost;
         p[topoIte -> first] = number;
-        cout << "distance from " << number << " to " << topoIte -> first <<" is " << d[topoIte -> first] << "\n";
+        cout << "distance from " << number << " to " << topoIte -> first << " is " << d[topoIte -> first] << "\n";
     }
 
-    cout << "nodes in topology: " << nodesInTopology <<"     " << d.size() << "\n";
+    //cout << "nodes in topology: " << nodesInTopology <<"     " << d.size() << "\n";
     // for all nodes in topology
     for(int i = 0; i < nodesInTopology - 1; i++) {
         int closest;
@@ -99,7 +91,7 @@ Node* LinkState::GetNextHop(Node *destination) {
             }
         }
         
-        cout << " Visited neighbor: " << closest << " | distance: " << closestDistance <<"\n";
+        //cout << " Visited neighbor: " << closest << " | min distance: " << closestDistance <<"\n";
         v[closest] = true;
         unsigned result = 0;
         if(closestDistance != 1000000) result = closestDistance;
@@ -125,12 +117,14 @@ Node* LinkState::GetNextHop(Node *destination) {
         nodeNumber = parentNode;
         parentNode = p[nodeNumber];
     }
-    cout << nodeNumber << " is returned " << "\n";
-    // Get the actual node to return
-    for(deque<Node*> :: iterator i = allNeighbors ->begin(); i != allNeighbors->end(); i++) {
-        if((Node(nodeNumber, 0, 0, 0).Matches(*i))) {
-            // return new Node(**i);
-            return *i;
+    cout << "\nhop occured from " << number << " to " << nodeNumber << "\n\n";
+    //cout << nodeNumber << " is returned " << "\n";
+
+    // Finally return the next hop
+    deque<Node*> :: iterator iter;
+    for(iter = allNeighbors ->begin(); iter != allNeighbors->end(); iter++) {
+        if((Node(nodeNumber, 0, 0, 0).Matches(*iter))) {
+            return *iter;
         }
     } 
 
