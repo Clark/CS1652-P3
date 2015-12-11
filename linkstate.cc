@@ -55,7 +55,8 @@ Node* LinkState::GetNextHop(Node *destination) {
     unsigned nodesInTopology = (myTable->topo).size();
     //cout << nodesInTopology << " NODES " << number << "\n";
     // STL structures for Dijkstra()
-    // using just a large number to represent infinity
+    // using just a large number to represent infinity distance
+    // using just a large number to represent undefined parent
     vector<int> d(nodesInTopology, 1000000);    // DISTANCE
     vector<int> p(nodesInTopology, 1000000);    // PREVIOUS
     vector<bool> v(nodesInTopology, false);     // VISITED
@@ -74,13 +75,13 @@ Node* LinkState::GetNextHop(Node *destination) {
     }
 
     cout << "nodes in topology: " << nodesInTopology <<"     " << d.size() << "\n";
-    // for each node in topology
+    // for all nodes in topology
     for(int i = 0; i < nodesInTopology - 1; i++) {
         int closest;
         int closestDistance = 1000000;
 
-        // Finds the closest neighbor
-        for(int j = 0; j < d.size(); j++) {
+        // Finds the cnode with the smallest distance
+        for(int j = 0; j < nodesInTopology; j++) {
             if(v[j] == false) {
                 if(d[j] < closestDistance) {
                     closestDistance = d[j];
@@ -89,17 +90,20 @@ Node* LinkState::GetNextHop(Node *destination) {
             }
         }
         
-        cout << "Closest neighbor: " << closest << "distance: " << closestDistance <<"\n";
+        cout << " Visited neighbor: " << closest << " | distance: " << closestDistance <<"\n";
         v[closest] = true;
         unsigned result = 0;
         if(closestDistance != 1000000) result = closestDistance;
 
-        // Iterate through, setting parents and distance
+        // for each neighbor of closest, adjust distance
         map<int, TopoLink> :: iterator topoIte2;
         for(topoIte2 = myTable->topo[closest].begin(); topoIte2 != myTable->topo[closest].end(); topoIte2++) {
-            if(d[topoIte2 -> first] > (d[topoIte2 -> second.cost] + result) && v[topoIte2 -> first] == false) {
-                d[topoIte2 -> first] = d[topoIte2 -> second.cost] + result;
-                p[topoIte2 -> first] = closest;
+            // Only if not visited yet
+            if(v[topoIte2 -> first] == false) {
+                if((d[topoIte2 -> second.cost] + result) < d[topoIte2 -> first]) {
+                    d[topoIte2 -> first] = d[topoIte2 -> second.cost] + result;
+                    p[topoIte2 -> first] = closest;
+                }            
             }
         }
     }
@@ -112,10 +116,12 @@ Node* LinkState::GetNextHop(Node *destination) {
         nodeNumber = parentNode;
         parentNode = p[nodeNumber];
     }
+    cout << nodeNumber << " is returned " << "\n";
     // Get the actual node to return
-    for(deque<Node*> :: iterator i = allNeighbors ->begin(); i != allNeighbors->end(); ++i) {
+    for(deque<Node*> :: iterator i = allNeighbors ->begin(); i != allNeighbors->end(); i++) {
         if((Node(nodeNumber, 0, 0, 0).Matches(*i))) {
-            return new Node(**i);
+            // return new Node(**i);
+            return *i;
         }
     } 
 
