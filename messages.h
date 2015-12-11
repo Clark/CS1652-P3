@@ -23,6 +23,9 @@ struct RoutingMessage {
     #endif
 
     #if defined(DISTANCEVECTOR)
+		RoutingMessage(const int node_number, map<int, double> dist_vector);
+		int node_number;
+		map<int, double> dist_vector; // Cost from node to all other nodes
     #endif
 };
 

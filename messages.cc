@@ -38,9 +38,15 @@ ostream &RoutingMessage::Print(ostream &os) const
 #endif
 
 #if defined(DISTANCEVECTOR)
+RoutingMessage::RoutingMessage(const int node_number, map<int, double> dist_vector) {
+		this->node_number = node_number;
+		this->dist_vector = dist_vector;
+}
+
 ostream &RoutingMessage::Print(ostream &os) const
 {
-    os << "DistanceVector RoutingMessage()";
+    // os << "DistanceVector RoutingMessage(node " << node_number << ")";
+		os << "DV-RM(sender=" << node_number << ")";
     return os;
 }
 #endif

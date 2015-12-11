@@ -38,9 +38,44 @@ int Table::update(const Link *l) {
 #endif
 
 #if defined(DISTANCEVECTOR)
+map<int, map<int, double> > latencytable; // All distance vectors
+
 ostream & Table::Print(ostream &os) const
 {
-  os << "DistanceVector Table()";
+	// FORMAT: Source -> [Destination, Latency]
+	os << "\n";
+	map<int, map<int, double> >::iterator x_it;
+	map<int, double>::iterator y_it;
+	for (x_it = latencytable.begin(); x_it != latencytable.end(); x_it++) 
+	{
+		int x = x_it->first;
+		os << x << "->";
+		map<int, double> x_vector = x_it->second;
+		for (y_it = x_vector.begin(); y_it != x_vector.end(); y_it++)
+		{
+			int y = y_it->first;
+			int l = y_it->second;
+			os << " [" << y << "," << l << "]";
+		}
+		os << "\n";
+	}	
   return os;
+}
+
+map<int, double> Table::GetLatenciesFrom(const int x) 
+{
+	map<int, double> copy;
+	copy.insert(latencytable[x].begin(), latencytable[x].end());
+	return copy;
+}
+
+double Table::GetLatency(const int x, const int y)
+{
+	return latencytable[x][y];
+}
+
+void Table::UpdateLatency(const int x, const int y, const double l)
+{
+	latencytable[x][y] = l;
 }
 #endif

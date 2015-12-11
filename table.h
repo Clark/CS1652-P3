@@ -57,6 +57,9 @@ class Table {
         #endif
 
         #if defined(DISTANCEVECTOR)
+				double GetLatency(const int x, const int y);
+				map<int, double> GetLatenciesFrom(const int x); // Return node x's distance vector
+				void UpdateLatency(const int x, const int y, const double l);
         #endif
 };
 
